@@ -10,7 +10,7 @@ export default function Header() {
 
 
   return (
-    <div className="block bg-white justify-between px-[20%] p-3 items-center md:flex">
+    <div className="sticky shadow-md top-0 block bg-white justify-between px-[20%] p-3 items-center md:flex">
       <p className="font-bold text-black">WrappApp</p>
       <div className="bg-gray-200 rounded-lg pt-2 pr-4 pb-2 pl-4 w-fit">
         <Link

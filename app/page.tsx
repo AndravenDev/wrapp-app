@@ -1,20 +1,36 @@
-import EventCard from "@/components/EventCard";
-import Image from "next/image";
+import EventCard, { EventCardProps } from "@/components/EventCard";
+import { createClient } from "@/utils/supabase/server";
+import { cookies } from "next/headers";
 
-export default function Home() {
+export default async function Home() {
+  const cookieStore = await cookies();
+  const supabase = await createClient(cookieStore);
+
+  const { data: events } = await supabase.from("event")
+    .select(`*, category:categories!inner(*),location:locations!left(*), people:event_people!left(
+        person:people!left(name)
+      )`).eq('categories.hidden', false)
+      .order("date", { ascending: false });
+
+  console.log("Data ", events);
+
   return (
-    <div>
-      <h1>Home</h1>
-      <EventCard
-        title="Some title"
-        description="Some longer description that I wrote here"
-        people={[{ personId: 1, name: "Jack" }]}
-        date={new Date()}
-        location="Kaufland"
-        amount={30}
-        positive={true}
-        withPartner={true}
-      />
+    <div className="pt-6">
+      {events?.map((event) => {
+        return (
+          <EventCard
+            key={event.eventId}
+            title={event.title}
+            description={event.description}
+            people={event.people}
+            date={new Date(event.date)}
+            location={event.location?.name}
+            amount={event.ammount}
+            positive={event.positive}
+            withPartner={event.withPartner}
+          />
+        );
+      })}
     </div>
   );
 }
